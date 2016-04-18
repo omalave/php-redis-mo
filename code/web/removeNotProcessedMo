@@ -1,0 +1,10 @@
+#!/usr/bin/php
+<?php
+require "vendor/autoload.php";
+
+$getNotProcessed = new Sammedia\Sammo();
+$response = $getNotProcessed->remNotProcessedMo();
+
+echo $response."\n";
+
+?>

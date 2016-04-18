@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+export DEBIAN_FRONTEND=noninteractive
+
+installpkg(){
+    dpkg-query --status $1 >/dev/null || apt-get install -y $1
+}
+
+apt-get update
+
+installpkg apache2-utils
+installpkg apache2-suexec-custom
+
+installpkg php5
+installpkg php5-dev
+installpkg php-pear
+installpkg redis-server
+
+# installing xdebug
+pecl install xdebug
+echo "zend_extension=xdebug.so" >> /etc/php5/cli/php.ini
+
+#enable swap space for composer
+/bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
+/sbin/mkswap /var/swap.1
+/sbin/swapon /var/swap.1
+#enable swap space
+
+echo "ServerName localhost" > /etc/apache2/conf-enabled/servername.conf
+a2enmod suexec
+a2dissite 000-default.conf
+cp /tmp/001-talented.conf /etc/apache2/sites-available
+a2ensite  001-talented.conf
+service apache2 restart
+
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+composer require predis/predis
+composer require phpunit/phpunit
+
+cd /home/vagrant/code/web/var/
+./populate_data

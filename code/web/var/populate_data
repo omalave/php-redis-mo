@@ -1,0 +1,53 @@
+#!/usr/bin/php
+<?php
+require "../vendor/autoload.php";
+
+function get_random_day() {
+
+  $t15m_ago  = new \DateTime("15 minutes ago");
+  $s         = strtotime($t15m_ago->format("Y-m-d H:i:s"));
+  $now       =  strtotime(date('Y-m-d H:i:s'));  
+  
+  $rData     = mt_rand($s,$now);
+
+  return $rData;
+
+}
+
+$redis = new \Predis\Client();
+$redis->select(0);
+
+echo "Waite while redis DB is populated... \n";
+
+for($c = 1; $c <= 1000; $c++) {
+
+    $processed = array_rand(array(True, False));
+    $set = 'mo:'.$c;
+    $date = get_random_day();
+    $v = array('test data', 'on game', 'game news', 'stop game', 'stop all', 'on forum', 'stop forum');
+
+    $redis->hmset($set, [
+    'id'          => $c,
+    'msisdn'      => 1111111,
+    'operatorid'  => 1,
+    'shortcodeid' => 222222,
+    'text'        => $v[ $c % count($v) ],
+    'token'       => 'token',
+    'date'        => $date
+    ]);
+    $redis->zAdd('created_at', $date, $c);
+    $redis->zAdd('mo_id', $c, $c);
+
+    if ($processed) {
+      $redis->sAdd('processed', $c);
+    } elseif (!$processed) {
+      $redis->sAdd('notprocessed', $c);
+    }
+
+
+    $redis->persist($c);
+
+}
+
+echo "Done! \n";
+echo "Vagrant box is ready \n";

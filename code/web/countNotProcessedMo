@@ -1,0 +1,10 @@
+#!/usr/bin/php
+<?php
+require "vendor/autoload.php";
+
+$getNotProcessed = new Sammedia\Sammo();
+$response = $getNotProcessed->getNotProcessedMoQty();
+
+echo "There is a {$response} MOs not processed \n";
+
+?>

@@ -1,0 +1,16 @@
+{
+  "name": "sammediatalenttest/omalave",
+  "description": "Sam Media talent test",
+  "license": "proprietary",
+  "require": {
+    "predis/predis": "^1.0",
+    "phpunit/phpunit": "^4.8",
+    "phpunit/php-code-coverage": "^2.2",
+    "squizlabs/php_codesniffer": "^2.6"
+  },
+  "autoload": {
+    "psr-4": {
+        "Sammedia\\": "src/"
+    }
+  }    
+}
